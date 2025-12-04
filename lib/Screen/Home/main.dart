@@ -1,3 +1,4 @@
+import 'package:afoooooo/Screen/Logo/logoInicio.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,7 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
+    debugShowCheckedModeBanner: false,
       title: 'Login App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -52,7 +55,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.light,
-      home: const LoginPage(),
+      home: const Inicio(),
     );
   }
 }
@@ -164,8 +167,13 @@ class _LoginPageState extends State<LoginPage> {
                     const SnackBar(
                         content: Text('Navegar a pantalla de registro')),
                   );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyApp()),
+                  );
                 },
-                child: const Text('¿No tienes una cuenta? Regístrate'),
+                child:const Text('¿No tienes una cuenta? Regístrate'),
+
               ),
             ],
           ),

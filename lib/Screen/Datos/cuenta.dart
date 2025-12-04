@@ -1,60 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
 
-//----------------------------------------------------
-// Clase principal de la aplicación
-//----------------------------------------------------
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Colores base
-    final Color primaryBlue = Colors.blue.shade700;
-    const Color lightBlueBackground = Color(0xFFE3F2FD);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Registro App',
-      theme: ThemeData(
-        scaffoldBackgroundColor: lightBlueBackground,
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: Colors.blue, width: 2.0),
-          ),
-          labelStyle: const TextStyle(color: Colors.grey),
-          prefixIconColor: Colors.grey,
-          suffixIconColor: Colors.grey,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryBlue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            textStyle: const TextStyle(fontSize: 18.0),
-          ),
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(foregroundColor: primaryBlue),
-        ),
-      ),
-      home: const SignUpScreen(),
-    );
-  }
-}
 
 //----------------------------------------------------
 // Pantalla de Registro
