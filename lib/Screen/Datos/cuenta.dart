@@ -1,3 +1,5 @@
+import 'package:afoooooo/common/Usuario.dart';
+import 'package:afoooooo/handlers/Sqlite_handler.dart';
 import 'package:flutter/material.dart';
 
 
@@ -19,6 +21,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+
+  Sqlite_handler miSqliteHandler = Sqlite_handler();
+  final _formKey = GlobalKey<FormState>();
+
+  //registro usuarios
+  late List<Usuario> usuarios;
+  Future<List<Usuario>> consulta(String username) async{
+    final db = await miSqliteHandler.getDB();
+    final List<Map<String, Object?>> mapaUsuario = await
+    db.rawQuery("select * from usuarios where username = '$username'");
+    return [
+      for(final {'usuario':usuario as String, 'pass':pass as String, 'nombre':nombre as String, 'correo':correo as String} in mapaUsuario)
+        Usuario(usuario: usuario, pass: pass, nombre: nombre, correo: correo),
+    ];
+  }
+
+  //agregar usuario
+  Future<bool> agregarUsuario(BuildContext context) async{
+    bool agregado = false;
+    if(_formKey.currentState!.validate()) {
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+      String nombre = _fullNameController.text;
+      String correo = _emailController.text;
+
+      List<Usuario> busca = await consulta(username);
+      if(busca.length == 0){
+        agregado = true;
+        try{
+          var db = await miSqliteHandler.getDB();
+          await db.insert('usuarios', {
+            "usuario": username,
+            "pass": password,
+            "nombre": nombre,
+            "correo": correo
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Usuario agregado"),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }catch(e){
+          print(e.toString());
+        }
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Usuario ya registrado"),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+    return agregado;
+  }
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
