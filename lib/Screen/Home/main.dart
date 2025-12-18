@@ -13,14 +13,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-    debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       title: 'Login App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFE3F2FD),
-        brightness: Brightness.light,
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
@@ -36,9 +34,12 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide(color: Colors.blue.shade700, width: 2.0),
           ),
+          errorBorder: OutlineInputBorder( // Borde rojo para errores
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          ),
           labelStyle: const TextStyle(color: Colors.grey),
           prefixIconColor: Colors.grey,
-          suffixIconColor: Colors.grey,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -51,16 +52,9 @@ class MyApp extends StatelessWidget {
             textStyle: const TextStyle(fontSize: 18.0),
           ),
         ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.blue.shade700,
-          ),
-        ),
       ),
-      themeMode: ThemeMode.light,
       onGenerateRoute: MyRoutes.rutasGeneradas,
-      initialRoute: RUTA_HOME,
-      //home: const Inicio(),
+      initialRoute: RUTA_HOME, // Asegúrate de que esta ruta apunte a LoginPage si es lo primero que quieres ver
     );
   }
 }
@@ -75,154 +69,133 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   Sqlite_handler miSqliteHandler = Sqlite_handler();
+  final _formKey = GlobalKey<FormState>(); // 1. La llave del formulario
 
-  final _formKey = GlobalKey<FormState>();
-  //funcion de inicio de sesion
+  // Lógica de Login corregida
+  void intentarLogin(BuildContext context) async {
+    // 2. Validar campos vacíos visualmente
+    if (_formKey.currentState!.validate()) {
 
-  late List<Usuario> usuarios;
-  Future<List<Usuario>> consulta(String username) async{
-    final db = await miSqliteHandler.getDB();
-    final List<Map<String, Object?>> mapaUsuario = await
-    db.rawQuery("select * from usuarios where username = '$username'");
-    return [
-      for(final {'usuario':usuario as String, 'pass':pass as String, 'nombre':nombre as String, 'correo':correo as String} in mapaUsuario)
-        Usuario(usuario: usuario, pass: pass, nombre: nombre, correo: correo),
-    ];
-  }
+      String usernameInput = _usernameController.text.trim();
+      String passwordInput = _passwordController.text.trim();
 
-  Future<bool> buscar(BuildContext context) async{
-    bool existe = false;
-    //if(_formKey.currentState!.validate()) {
-      String username = _usernameController.text;
-      String password = _passwordController.text;
+      // Consulta segura usando '?'
+      final db = await miSqliteHandler.getDB();
+      final List<Map<String, Object?>> resultados = await db.query(
+        'usuarios',
+        where: 'usuario = ?', // Asegúrate que tu columna en BD se llame 'username'
+        whereArgs: [usernameInput],
+      );
 
-      List<Usuario> busca = await consulta(username);
-      if(busca.length > 0){
-        existe = true;
+      if (resultados.isNotEmpty) {
+        // El usuario existe, ahora verificamos la contraseña
+        String passwordBD = resultados.first['pass'] as String;
+
+        if (passwordBD == passwordInput) {
+          // ¡ÉXITO!
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bienvenido')),
+          );
+          Navigator.pushNamed(context, RUTA_MAIN); // O RUTA_HOME según tu lógica
+        } else {
+          // Contraseña incorrecta
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Contraseña incorrecta')),
+          );
+        }
+      } else {
+        // Usuario no encontrado
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('El usuario no existe')),
+        );
       }
-    //}
-    return existe;
-  }
-
-  void comprobarUsuario(BuildContext context) async{
-    bool resu = await buscar(context);
-    if(resu){
-      Navigator.pushNamed(context, RUTA_MAIN);
-    }
-  }
-
-  void _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (_usernameController.text == 'usuario' &&
-        _passwordController.text == 'password') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inicio de sesión exitoso!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Credenciales incorrectas')),
-      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Se eliminó el AppBar completamente
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Text(
-                'Iniciar Sesión',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 50.0),
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Usuario',
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+          child: Form( // 3. Envolvemos todo en un FORM
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Text(
+                  'Iniciar Sesión',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-              const SizedBox(height: 24.0),
-              //_isLoading
-              //    ? const Center(child: CircularProgressIndicator())
-              ElevatedButton(
-                onPressed: (){
-                  comprobarUsuario(context);
-                },
-                child: const Text('Iniciar sesión'),
-              ),
-              const SizedBox(height: 16.0),
-              TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                        Text('Función de recuperación de contraseña')),
-                  );
-                },
-                child: const Text('¿Olvidaste tu contraseña?'),
-              ),
-              TextButton(
-                onPressed: () {
-                  /*
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Navegar a pantalla de registro')),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyApp()),
-                  );
-                   */
-                  Navigator.pushNamed(context, RUTA_REGISTER);
-                },
-                child:const Text('¿No tienes una cuenta? Regístrate'),
+                const SizedBox(height: 50.0),
 
-              ),
-            ],
+                // 4. Usamos TextFormField en lugar de TextField
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Usuario',
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa tu usuario';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa tu contraseña';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24.0),
+
+                ElevatedButton(
+                  onPressed: () {
+                    intentarLogin(context);
+                  },
+                  child: const Text('Iniciar sesión'),
+                ),
+
+                const SizedBox(height: 16.0),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, RUTA_REGISTER);
+                  },
+                  child: const Text('¿No tienes una cuenta? Regístrate'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -115,7 +115,10 @@ class MainMenuScreen extends StatelessWidget {
   final List<BottomNavigationBarItem> bottomNavItems = const [
     BottomNavigationBarItem(
       icon: Icon(Icons.home_outlined),
-      activeIcon: Icon(Icons.home),
+      activeIcon: Icon(
+        Icons.home,
+        color: Colors.lightBlue,
+      ),
       label: 'Inicio',
     ),
     BottomNavigationBarItem(

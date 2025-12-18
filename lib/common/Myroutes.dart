@@ -1,6 +1,7 @@
 import 'package:afoooooo/Screen/Datos/cuenta.dart';
 import 'package:afoooooo/Screen/Home/main.dart';
 import 'package:afoooooo/Screen/Logo/logoInicio.dart';
+import 'package:afoooooo/Screen/Principal/menuPrincipal.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:manejo_witgets/PaginaInicio.dart';
@@ -20,7 +21,7 @@ class MyRoutes{
       case "/home":
         return MaterialPageRoute(builder: (_)=> Inicio());
         case "/main":
-          return MaterialPageRoute(builder: (_)=> MyApp());
+          return MaterialPageRoute(builder: (_)=> MainMenuScreen());
       default:
         return MaterialPageRoute(builder: (_) => Inicio());
     }

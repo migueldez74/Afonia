@@ -10,7 +10,7 @@ class Sqlite_handler {
   void _onCreate(Database db, int version) async{
     await db.execute('''
     create table usuarios(
-      usuario text prymary key,
+      usuario text primary key,
       pass text,
       nombre text,
       correo text
