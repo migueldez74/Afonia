@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<bool> buscar(BuildContext context) async{
     bool existe = false;
-    if(_formKey.currentState!.validate()) {
+    //if(_formKey.currentState!.validate()) {
       String username = _usernameController.text;
       String password = _passwordController.text;
 
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
       if(busca.length > 0){
         existe = true;
       }
-    }
+    //}
     return existe;
   }
 
