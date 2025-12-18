@@ -1,3 +1,4 @@
+import 'package:afoooooo/common/Myroutes.dart';
 import 'package:afoooooo/common/Usuario.dart';
 import 'package:afoooooo/handlers/Sqlite_handler.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     }
     return agregado;
+  }
+
+  void agregarDatosUsuario(BuildContext context) async{
+    bool resu = await agregarUsuario(context);
+    if(resu){
+      Navigator.popAndPushNamed(context, RUTA_LOGIN);
+    }
   }
 
   bool _obscurePassword = true;
@@ -203,16 +211,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                onPressed: _register,
+                onPressed: () {
+                  agregarDatosUsuario(context);
+                  Navigator.popAndPushNamed(context, RUTA_LOGIN);
+                },
                 child: const Text('Registrar'),
               ),
               const SizedBox(height: 16.0),
 
               TextButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Navegar a Iniciar Sesión')),
-                  );
+                  Navigator.popAndPushNamed(context, RUTA_LOGIN);
                 },
                 child: const Text('¿Ya tienes cuenta? Inicia sesión'),
               ),

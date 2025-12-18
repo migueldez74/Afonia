@@ -1,4 +1,7 @@
 import 'package:afoooooo/Screen/Logo/logoInicio.dart';
+import 'package:afoooooo/common/Myroutes.dart';
+import 'package:afoooooo/common/Usuario.dart';
+import 'package:afoooooo/handlers/Sqlite_handler.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -55,7 +58,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.light,
-      home: const Inicio(),
+      onGenerateRoute: MyRoutes.rutasGeneradas,
+      initialRoute: RUTA_HOME,
+      //home: const Inicio(),
     );
   }
 }
@@ -72,6 +77,43 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+
+  Sqlite_handler miSqliteHandler = Sqlite_handler();
+
+  final _formKey = GlobalKey<FormState>();
+  //funcion de inicio de sesion
+
+  late List<Usuario> usuarios;
+  Future<List<Usuario>> consulta(String username) async{
+    final db = await miSqliteHandler.getDB();
+    final List<Map<String, Object?>> mapaUsuario = await
+    db.rawQuery("select * from usuarios where username = '$username'");
+    return [
+      for(final {'usuario':usuario as String, 'pass':pass as String, 'nombre':nombre as String, 'correo':correo as String} in mapaUsuario)
+        Usuario(usuario: usuario, pass: pass, nombre: nombre, correo: correo),
+    ];
+  }
+
+  Future<bool> buscar(BuildContext context) async{
+    bool existe = false;
+    if(_formKey.currentState!.validate()) {
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+
+      List<Usuario> busca = await consulta(username);
+      if(busca.length > 0){
+        existe = true;
+      }
+    }
+    return existe;
+  }
+
+  void comprobarUsuario(BuildContext context) async{
+    bool resu = await buscar(context);
+    if(resu){
+      Navigator.pushNamed(context, RUTA_MAIN);
+    }
+  }
 
   void _login() async {
     setState(() {
@@ -144,10 +186,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                onPressed: _login,
+              //_isLoading
+              //    ? const Center(child: CircularProgressIndicator())
+              ElevatedButton(
+                onPressed: (){
+                  comprobarUsuario(context);
+                },
                 child: const Text('Iniciar sesión'),
               ),
               const SizedBox(height: 16.0),
@@ -163,6 +207,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                 onPressed: () {
+                  /*
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                         content: Text('Navegar a pantalla de registro')),
@@ -171,6 +216,8 @@ class _LoginPageState extends State<LoginPage> {
                     context,
                     MaterialPageRoute(builder: (context) => const MyApp()),
                   );
+                   */
+                  Navigator.pushNamed(context, RUTA_REGISTER);
                 },
                 child:const Text('¿No tienes una cuenta? Regístrate'),
 
