@@ -1,57 +1,10 @@
+// En: Screen/Principal/menuPrincipal.dart
+
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+// --- NO MÁS main(), NO MÁS MyApp ---
 
-// -------------------------------------------------------------------------
-// 1. CONFIGURACIÓN GENERAL DEL TEMA
-// -------------------------------------------------------------------------
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final Color primaryBlue = Colors.blue.shade700;
-    const Color lightBlueBackground = Color(0xFFE3F2FD);
-
-    return MaterialApp(
-      title: 'Menú Principal App',
-      theme: ThemeData(
-        scaffoldBackgroundColor: lightBlueBackground,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryBlue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            textStyle: const TextStyle(fontSize: 18.0),
-            elevation: 2,
-          ),
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedItemColor: primaryBlue,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      themeMode: ThemeMode.light,
-      home: const MainMenuScreen(),
-    );
-  }
-}
-
-// -------------------------------------------------------------------------
-// 2. WIDGET DE CADA MÓDULO
-// -------------------------------------------------------------------------
+// Widget de Módulo (sin cambios)
 class ModuleItem extends StatelessWidget {
   final String title;
   final bool isUnlocked;
@@ -73,6 +26,10 @@ class ModuleItem extends StatelessWidget {
         },
         icon: const Icon(Icons.play_arrow),
         label: Text(title),
+        style: ElevatedButton.styleFrom(
+          // Podemos tomar el color del tema para consistencia
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     }
 
@@ -106,44 +63,19 @@ class ModuleItem extends StatelessWidget {
   }
 }
 
-// -------------------------------------------------------------------------
-// 3. PANTALLA PRINCIPAL SIN BARRA SUPERIOR
-// -------------------------------------------------------------------------
+// Pantalla de Menú Principal (simplificada)
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
-
-  final List<BottomNavigationBarItem> bottomNavItems = const [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home_outlined),
-      activeIcon: Icon(
-        Icons.home,
-        color: Colors.lightBlue,
-      ),
-      label: 'Inicio',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.chat_bubble_outline),
-      activeIcon: Icon(Icons.chat_bubble),
-      label: 'Conversar',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.text_fields_outlined),
-      activeIcon: Icon(Icons.text_fields),
-      label: 'Frases',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.settings_outlined),
-      activeIcon: Icon(Icons.settings),
-      label: 'Ajustes',
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔹 Quitamos el AppBar completamente
+      // AÑADIMOS UN APPBAR PARA CONSISTENCIA
+      appBar: AppBar(
+        title: const Text('Inicio'),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -201,17 +133,7 @@ class MainMenuScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // Barra inferior
-      bottomNavigationBar: BottomNavigationBar(
-        items: bottomNavItems,
-        currentIndex: 0,
-        onTap: (index) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Navegando al ítem ${index + 1}')),
-          );
-        },
-      ),
+      // --- YA NO HAY bottomNavigationBar AQUÍ ---
     );
   }
 }

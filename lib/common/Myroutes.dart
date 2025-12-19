@@ -1,29 +1,34 @@
+// En: lib/common/Myroutes.dart
+
 import 'package:afoooooo/Screen/Datos/cuenta.dart';
 import 'package:afoooooo/Screen/Home/main.dart';
 import 'package:afoooooo/Screen/Logo/logoInicio.dart';
-import 'package:afoooooo/Screen/Principal/menuPrincipal.dart';
+// Importa el NUEVO archivo
+import 'package:afoooooo/Screen/Navegacion/navegacion_principal.dart';
 import 'package:flutter/material.dart';
 
-//import 'package:manejo_witgets/PaginaInicio.dart';
+const String RUTA_HOME = "/";
+const String RUTA_LOGIN = "/login";
+const String RUTA_REGISTER = "/register";
+const String RUTA_MAIN = "/main";
 
-const String RUTA_HOME ="/home";
-const String RUTA_LOGIN = "/login"; //esta ya esta
-const String RUTA_REGISTER = "/register"; //manda a la pagina de registro
-const String RUTA_MAIN = "/main"; // manda a la pagina principal de ejercicios
+class MyRoutes {
+  static Route<dynamic> rutasGeneradas(RouteSettings settings) {
+    switch (settings.name) {
+      case RUTA_HOME:
+        return MaterialPageRoute(builder: (context) => const Inicio());
+      case RUTA_LOGIN:
+        return MaterialPageRoute(builder: (context) => const LoginPage());
+      case RUTA_REGISTER:
+        return MaterialPageRoute(builder: (context) => const SignUpScreen());
 
-class MyRoutes{
-  static Route<dynamic>rutasGeneradas(RouteSettings settings){
-    switch (settings.name){
-      case "/login":
-        return MaterialPageRoute(builder: (_) => LoginPage());
-      case "/register":
-        return MaterialPageRoute(builder: (_) => SignUpScreen());
-      case "/home":
-        return MaterialPageRoute(builder: (_)=> Inicio());
-        case "/main":
-          return MaterialPageRoute(builder: (_)=> MainMenuScreen());
+    // --- CAMBIO IMPORTANTE AQUÍ ---
+    // Ahora RUTA_MAIN te lleva al controlador de navegación.
+      case RUTA_MAIN:
+        return MaterialPageRoute(builder: (context) => const NavegacionPrincipal());
+
       default:
-        return MaterialPageRoute(builder: (_) => Inicio());
+        return MaterialPageRoute(builder: (context) => const Inicio());
     }
   }
 }
