@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 const String RUTA_HOME ="/home";
 const String RUTA_LOGIN = "/login"; //esta ya esta
-const String RUTA_REGISTER = "/register";
+const String RUTA_REGISTER = "/register"; //manda a la pagina de registro
 const String RUTA_MAIN = "/main"; // manda a la pagina principal de ejercicios
 
 class MyRoutes{
